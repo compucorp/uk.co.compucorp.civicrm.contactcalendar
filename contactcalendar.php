@@ -3,6 +3,21 @@
 require_once 'contactcalendar.civix.php';
 
 /**
+*	hook calendar to tabs
+*/
+function contactcalendar_civicrm_tabs( &$tabs, $contactID ) {
+
+  $url = CRM_Utils_System::url( 'civicrm/contact/calendar/',
+                                 "reset=1&cid={$contactID}&snippet=1" );
+
+  $tabs[] = array( 'id'    => 'calendarView',
+                   'url'   => $url,
+                   'title' => 'Calendar',
+                   'weight' => 300 );
+
+}
+
+/**
  * Implementation of hook_civicrm_config
  */
 function contactcalendar_civicrm_config(&$config) {
