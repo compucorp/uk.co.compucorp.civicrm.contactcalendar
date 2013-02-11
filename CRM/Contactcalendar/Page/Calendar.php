@@ -4,12 +4,17 @@ require_once 'CRM/Core/Page.php';
 
 class CRM_Contactcalendar_Page_Calendar extends CRM_Core_Page {
   function run() {
-    // Example: Set the page-title dynamically; alternatively, declare a static title in xml/Menu/*.xml
-    CRM_Utils_System::setTitle(ts('Calendar'));
+    
+    $contactId = CRM_Utils_Request::retrieve( 'cid', 'Positive', $this, true );
+    $this->assign( 'contactId', $contactId );
 
-    // Example: Assign a variable for use in a template
-    $this->assign('currentTime', date('Y-m-d H:i:s'));
-
+    // check logged in url permission
+    require_once 'CRM/Contact/Page/View.php';
+    CRM_Contact_Page_View::checkUserPermission( $this );
+        
+    $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this, false, 'browse');
+    $this->assign( 'action', $this->_action);
+	
     parent::run();
   }
 }
