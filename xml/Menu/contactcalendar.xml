@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <menu>
   <item>
-    <path>civicrm/calendar</path>
+    <path>civicrm/contact/calendar</path>
     <page_callback>CRM_Contactcalendar_Page_Calendar</page_callback>
     <title>Calendar</title>
     <access_arguments>access CiviCRM</access_arguments>
