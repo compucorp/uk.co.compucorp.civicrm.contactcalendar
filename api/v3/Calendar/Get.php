@@ -13,16 +13,11 @@ function civicrm_api3_calendar_get($params) {
   try{
     $cid = CRM_Utils_Array::value('cid',$params);
 
-    $results = civicrm_api("Activity","get", array ('version' => '3','sequential' =>'1',
-    'target_contact_id' => $cid ,
-    'return.assignee_contact_id' => 1,
-    'return.target_contact_id' => 1,
-    'api.contact.get' => array( 
-      'id' => '$value.source_contact_id',
-    ), 'rowCount' => 200));
-  
+    require_once 'CRM/Contactcalendar/BAO/Calendar.php';
+    $activities = CRM_Contactcalendar_BAO_Calendar::getActivities($cid);
+
     $events = array();
-    foreach($results['values'] as $k => $activity){
+    foreach($activities as $k => $activity){
 
       $events[$k]['title'] = $activity['subject'];
       $events[$k]['start'] = $activity['activity_date_time'];
@@ -41,7 +36,7 @@ function civicrm_api3_calendar_get($params) {
     // ALTERNATIVE: $returnValues = array(); // OK, success
     // ALTERNATIVE: $returnValues = array("Some value"); // OK, return a single value
     $returnValues = $events;
-    return civicrm_api3_create_success($results, $params, 'Calendar', 'Get');
+    return civicrm_api3_create_success($returnValues, $params, 'Calendar', 'Get');
   }catch (Exception $ex){
     throw new API_Exception($ex, 0001);
   }
