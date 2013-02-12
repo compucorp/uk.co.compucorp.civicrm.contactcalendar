@@ -18,11 +18,42 @@ var crmajaxURL = '{/literal}{php} print base_path(); {/php}{literal}civicrm/ajax
 	      	},
 	      	defaultView: 'month',
 	      	firstDay: 1,
-	      	allDaySlot: false,
-	     
-	    	events: function(start, end, callback) {
-	       
-	      } 
+	      	allDaySlot: true,
+	      	slotMinutes: 15,
+	    		events: function(start, end, callback) {
+		      	jQuery.ajax({
+	            cache: false,
+	            url: crmajaxURL,
+	            dataType: 'json',
+	            data: {
+	                // our hypothetical feed requires UNIX timestamps
+	                start: Math.round(start.getTime() / 1000),
+	                end: Math.round(end.getTime() / 1000),
+	                cid: {/literal}{$contactId}{literal},
+	                entity: 'Calendar',
+	                action: 'Get',
+	                json: 1,
+	                sequential: 1
+	            },
+	            success: function(data) {
+	              var events = new Array();
+	              for(index in data.values){    
+	                e = data.values[index];
+	                ad = false;
+	                if(e.allDay == 1){
+	                  ad = true;
+	                }
+	                events.push({
+	                      title: e.title,
+	                      start: e.start,
+	                      end: e.end,
+	                      allDay: ad
+	                });      
+	              }
+	              callback(events);
+	            }
+	        	}); 
+	      	} 
 	    }); 
 	}); //end ready function   
 })(jQuery); 
