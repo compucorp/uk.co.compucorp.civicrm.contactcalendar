@@ -9,7 +9,7 @@ class CRM_Contactcalendar_BAO_Calendar{
 
     $queryParam = array(1 => array($contactId, 'Integer'));
 
-		//get activity assignment
+    //get assignee and target contact
 		$query = "
 			SELECT activity.id,
 						 activity.subject,
