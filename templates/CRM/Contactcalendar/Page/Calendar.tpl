@@ -7,11 +7,8 @@
 {literal}
 <script type="text/javascript">
 var crmajaxURL = '{/literal}{php} print base_path(); {/php}{literal}civicrm/ajax/rest';
-
-// added
 var CiviBorderColor = "#36c";
-var number = 1;
-// added
+var ActivityType = 1;
 
 (function ($) {
 	jQuery(document).ready(function () {
@@ -36,7 +33,8 @@ var number = 1;
 	                start: Math.round(start.getTime() / 1000),
 	                end: Math.round(end.getTime() / 1000),
 	                cid: {/literal}{$contactId}{literal},
-			atypes: 'all', // Activity Types (all = All types or Activity Type numbers seperated by commas)
+	                atypes: 'all', // Activity Types (all = All types or Activity Type numbers separated by commas)
+	                aemailed: 0, // Show emailed copy of Activity (1 = show, 0 = hide)
 	                entity: 'Calendar',
 	                action: 'Get',
 	                json: 1,
@@ -47,65 +45,63 @@ var number = 1;
 	              for(index in data.values){    
 	                e = data.values[index];
 
-	jQuery.ajax({
-                async: false,
-		cache: false,
-		url: crmajaxURL,
-		dataType: 'json',
-		data: {
-			id: e.id,
-			entity: 'Activity',
-			action: 'Get',
-			json: 1,
-			sequential: 1
-		},
-		success: function(data) {
-			var aevents = new Array();
-			for(aindex in data.values){    
-				ae = data.values[aindex];
+					jQuery.ajax({
+						async: false,
+						cache: false,
+						url: crmajaxURL,
+						dataType: 'json',
+						data: {
+							id: e.id,
+							entity: 'Activity',
+							action: 'Get',
+							json: 1,
+							sequential: 1
+						},
+						success: function(data) {
+							var aevents = new Array();
+							for(aindex in data.values){    
+								ae = data.values[aindex];
 
-	TheColors = CiviColor(parseInt(ae.activity_type_id));
-	var now = '{/literal}{php} print date("Y-m-d H:i:s"); {/php}{literal}';
+								TheColors = CiviColor(parseInt(ae.activity_type_id));
+								var now = '{/literal}{php} print date("Y-m-d H:i:s"); {/php}{literal}';
 
-	var a=ae.activity_date_time.split(" ");
-	var b=a[0].split("-");
-	var c=a[1].split(":");
-	var TimeStart = new Date(b[0],(b[1]-1),b[2],b[0],c[1],c[2]);
+								var a=ae.activity_date_time.split(" ");
+								var b=a[0].split("-");
+								var c=a[1].split(":");
+								var TimeStart = new Date(b[0],(b[1]-1),b[2],b[0],c[1],c[2]);
 
-	var a=now.split(" ");
-	var b=a[0].split("-");
-	var c=a[1].split(":");
-	var TimeNow = new Date(b[0],(b[1]-1),b[2],b[0],c[1],c[2]);
+								var a=now.split(" ");
+								var b=a[0].split("-");
+								var c=a[1].split(":");
+								var TimeNow = new Date(b[0],(b[1]-1),b[2],b[0],c[1],c[2]);
 
-	TimeStartString = Math.round(TimeStart.getTime() / 1000);
-	TimeNowString = Math.round(TimeNow.getTime() / 1000);
+								TimeStartString = Math.round(TimeStart.getTime() / 1000);
+								TimeNowString = Math.round(TimeNow.getTime() / 1000);
 
-				if ((parseInt(ae.status_id) != 2) && (TimeStartString < TimeNowString) && (TheColors[2] == "ALL ASQ")) { // Past Due ASQ's
-					CiviBorderColor = '#FF0000';
-					TheColors[1] = CiviBorderColor;
-				}else if (TheColors[2] == "ALL ASQ" ){ // Not Past Due ASQ's
-					switch(parseInt(ae.status_id)) {
-						case 1: // Scheduled
-							CiviBorderColor = 'white';
-							TheColors[1] = CiviBorderColor;
-							break;
-						case 2: // Completed
-							CiviBorderColor = 'Grey';
-							TheColors[1] = CiviBorderColor;
-							break;
-						case 99: // Need to Schedule
-							CiviBorderColor = 'Yellow';
-							TheColors[1] = CiviBorderColor;
-							break;
-						default: //default code block
-							CiviBorderColor = 'orange';
-							TheColors[1] = CiviBorderColor;
-					}
-
-				}
-			}
-		}
-	});
+								if ((parseInt(ae.status_id) != 2) && (TimeStartString < TimeNowString) && (TheColors[2] != "Default")) { // Past Due
+									CiviBorderColor = '#FF0000';
+									// TheColors[1] = CiviBorderColor;
+								}else if (TheColors[2] != "Default"){ // Not Past Due
+									switch(parseInt(ae.status_id)) {
+										case 1: // Scheduled
+											CiviBorderColor = 'white';
+											// TheColors[1] = CiviBorderColor;
+											break;
+										case 2: // Completed
+											CiviBorderColor = 'Grey';
+											// TheColors[1] = CiviBorderColor;
+											break;
+										default: //default code block
+											CiviBorderColor = 'white';
+											// TheColors[1] = CiviBorderColor;
+									}
+								}else {
+									CiviBorderColor = 'white';
+									// TheColors[1] = CiviBorderColor;
+								}
+							}
+						}
+					});
 
 	                ad = false;
 	                if(e.allDay == 1){
@@ -129,24 +125,56 @@ var number = 1;
 	    });
 	}); //end ready function
 
-	function CiviColor(number){
+	function CiviColor(ActivityType){
 		color = new Array();
-		switch(number) {
-			case 1: // Activity Type 1
-			case 2: // Activity Type 2
-				BGcolor = "green";
-				TextColor = "white";
-				ActivityType = "ALL ASQ";
+		switch(ActivityType) {
+			case 19: // Bulk Email
+			case 37: // Cancel Recurring Contribution
+			case 35: // Change Membership Status
+			case 36: // Change Membership Type
+			case 48: // Change Registration
+			case 51: // Contact Merged
+			case 6:  // Contribution
+			case 42: // Create Batch
+			case 49: // Downloaded Invoice
+			case 43: // Edit Batch
+			case 3:  // Email
+			case 50: // Emailed Invoice
+			case 5:  // Event Registration
+			case 41: // Export Accounting Batch
+			case 52: // Failed Payment
+			case 12: // Inbound Email
+			case 45: // Inbound SMS
+			case 34: // Mass SMS
+			case 1:  // Meeting
+			case 8:  // Membership Renewal
+			case 17: // Membership Renewal Reminder
+			case 7:  // Membership Signup
+			case 4:  // Outbound SMS
+			case 46: // Payment
+			case 2:  // Phone Call
+			case 10: // Pledge Acknowledgment
+			case 11: // Pledge Reminder
+			case 22: // Print PDF Letter
+			case 47: // Refund
+			case 40: // Reminder Sent
+			case 44: // SMS delivery
+			case 9:  // Tell a Friend
+			case 39: // Update Recurring Contribution
+			case 38: // Update Recurring Contribution Billing Details
+				BGcolor = "#36c";
+				TextColor = "#FFF";
+				Type = "Not Default";
 				break;
 			default: // Other Activity Types
 				BGcolor = "#36c";
 				TextColor = "#FFF";
-				ActivityType = "Default";
+				Type = "Default";
 		}
 
 		color.push(BGcolor);
 		color.push(TextColor);
-		color.push(ActivityType);
+		color.push(Type);
 
 		return color;
 	}
