@@ -6,9 +6,9 @@ class CRM_Contactcalendar_BAO_Calendar{
 	*	Get Calendar event by $contactId
 	*/
 	//static function getActivities($contactId){
-	static function getActivities($contactId, $start, $end, $atypes){
+	static function getActivities($contactId, $start, $end, $atypes, $aemailed){
 
-		$queryParam = array(1 => array($contactId, 'Integer'), 2 => array($start, 'String'), 3 => array($end, 'String'), 4 => array($atypes, 'String'));
+	$queryParam = array(1 => array($contactId, 'Integer'), 2 => array($start, 'String'), 3 => array($end, 'String'), 4 => array($atypes, 'String'));
 
 $query1 = "SELECT activity.id,
 activity.subject,
@@ -23,13 +23,19 @@ AND activity.activity_date_time BETWEEN %2 AND %3";
 
 $query2 = "AND activity.activity_type_id IN (%4)";
 
-$query3 = "AND activity.status_id != 3
-AND activity.is_deleted = 0
+$query3 = "AND activity.status_id != 3";
+
+$query4 = "AND activity.is_deleted = 0
 AND activity.is_current_revision = 1
 AND activity.medium_id IS NULL
 GROUP BY activity.id";
 
-if (strtolower($atypes) != "all"){$query = $query1.$query2.$query3;}else{$query = $query1.$query3;}
+$query = $query1;
+
+if(strtolower($atypes) != "all"){$query = $query." ".$query2;}
+if($aemailed == 0){$query = $query." ".$query3;}
+
+$query = $query." ".$query4;
 
     $activities = array();
     $dao = CRM_Core_DAO::executeQuery($query, $queryParam);
