@@ -8,7 +8,7 @@ class CRM_Contactcalendar_BAO_Calendar{
 	//static function getActivities($contactId){
 	static function getActivities($contactId, $start, $end, $atypes){
 
-	$queryParam = array(1 => array($contactId, 'Integer'), 2 => array($start, 'String'), 3 => array($end, 'String'), 4 => array($atypes, 'String'));
+		$queryParam = array(1 => array($contactId, 'Integer'), 2 => array($start, 'String'), 3 => array($end, 'String'), 4 => array($atypes, 'String'));
 
 $query1 = "SELECT activity.id,
 activity.subject,
