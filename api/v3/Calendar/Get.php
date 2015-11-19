@@ -9,6 +9,7 @@
  * @see civicrm_api3_create_error
  * @throws API_Exception
  */
+ 
 function civicrm_api3_calendar_get($params) {
   try{
     $cid = CRM_Utils_Array::value('cid',$params);
