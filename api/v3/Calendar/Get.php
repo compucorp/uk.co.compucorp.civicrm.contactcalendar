@@ -9,16 +9,16 @@
  * @see civicrm_api3_create_error
  * @throws API_Exception
  */
- 
 function civicrm_api3_calendar_get($params) {
   try{
     $cid = CRM_Utils_Array::value('cid',$params);
     $start = date('Y-m-d H:i:s', CRM_Utils_Array::value('start',$params));
     $end = date('Y-m-d H:i:s', CRM_Utils_Array::value('end',$params));
     $atypes = CRM_Utils_Array::value('atypes',$params);
+    $aemailed = CRM_Utils_Array::value('aemailed',$params);
 
     require_once 'CRM/Contactcalendar/BAO/Calendar.php';
-    $activities = CRM_Contactcalendar_BAO_Calendar::getActivities($cid, $start, $end, $atypes);
+    $activities = CRM_Contactcalendar_BAO_Calendar::getActivities($cid, $start, $end, $atypes, $aemailed);
 
     $events = array();
     foreach($activities as $k => $activity){
