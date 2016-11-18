@@ -19,7 +19,7 @@ var ActivityType = 1;
 	        	right: 'month,agendaWeek,agendaDay'
 	      	},
 	      	defaultView: 'month',
-	      	firstDay: 1,
+	      	firstDay: 0,
 	      	allDaySlot: true,
 	      	slotMinutes: 15,
 	    		events: function(start, end, callback) {
@@ -33,8 +33,8 @@ var ActivityType = 1;
 	                start: Math.round(start.getTime() / 1000),
 	                end: Math.round(end.getTime() / 1000),
 	                cid: {/literal}{$contactId}{literal},
-	                atypes: 'all', // Activity Types (all = All types or Activity Type numbers separated by commas)
-	                aemailed: 0, // Show emailed copy of Activity (1 = show, 0 = hide)
+	                show: 'all', // Activity Types (all = All types or Activity Type numbers separated by commas to only Show)
+	                hide: '0', // Activity Types (0 = Hide none or Activity Type numbers separated by commas to Hide)
 	                entity: 'Calendar',
 	                action: 'Get',
 	                json: 1,
@@ -128,6 +128,11 @@ var ActivityType = 1;
 	function CiviColor(ActivityType){
 		color = new Array();
 		switch(ActivityType) {
+			case 1:   // Meeting
+				BGcolor = "green";
+				TextColor = "#FFF";
+				Type = "Not Default";
+				break;
 			case 19: // Bulk Email
 			case 37: // Cancel Recurring Contribution
 			case 35: // Change Membership Status
@@ -146,7 +151,6 @@ var ActivityType = 1;
 			case 12: // Inbound Email
 			case 45: // Inbound SMS
 			case 34: // Mass SMS
-			case 1:  // Meeting
 			case 8:  // Membership Renewal
 			case 17: // Membership Renewal Reminder
 			case 7:  // Membership Signup
