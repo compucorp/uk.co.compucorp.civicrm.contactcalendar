@@ -12,13 +12,19 @@
 function civicrm_api3_calendar_get($params) {
   try{
     $cid = CRM_Utils_Array::value('cid',$params);
+    $start = date('Y-m-d H:i:s', CRM_Utils_Array::value('start',$params));
+    $end = date('Y-m-d H:i:s', CRM_Utils_Array::value('end',$params));
+    $show = CRM_Utils_Array::value('show',$params);
+    $hide = CRM_Utils_Array::value('hide',$params);
 
     require_once 'CRM/Contactcalendar/BAO/Calendar.php';
-    $activities = CRM_Contactcalendar_BAO_Calendar::getActivities($cid);
+    $activities = CRM_Contactcalendar_BAO_Calendar::getActivities($cid, $start, $end, $show, $hide);
 
     $events = array();
     foreach($activities as $k => $activity){
 
+      $events[$k]['cid'] = $activity['cid'];
+      $events[$k]['id'] = $activity['id'];
       $events[$k]['title'] = $activity['subject'];
       $events[$k]['start'] = $activity['activity_date_time'];
 
@@ -41,4 +47,3 @@ function civicrm_api3_calendar_get($params) {
     throw new API_Exception($ex, 0001);
   }
 }
-
